@@ -1,0 +1,8 @@
+.gallery(ng-controller="GalleryController")
+    div(ng-repeat="img in images | orderBy:'-toString()'")
+        img(src='{{img}}')
+        span
+            a(href="http://twitter.com/share?url=http://www.flybrizi.com/&text=Above it all!", target="_blank")
+                img(src="http://www.simplesharebuttons.com/images/somacro/twitter.png", alt="Twitter")
+            a(href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.flybrizi.com/event", target="_blank", title="Share this page on Facebook")
+                img(src="http://www.simplesharebuttons.com/images/somacro/facebook.png", alt="Facebook")

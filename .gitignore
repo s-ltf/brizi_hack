@@ -1,0 +1,6 @@
+images_ftp/*.*
+images_snaps/*.*
+mobile/assets/*
+mobile/bower_components/*
+mobile/index.html
+mobile/node_modules/*

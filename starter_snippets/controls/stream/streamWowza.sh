@@ -1,0 +1,1 @@
+/opt/vc/bin/raspivid -o - -w 400 -h 328 -t 100000000 -fps 12 -s | avconv -f h264 -i pipe:0 -s 400×328 -r 12 -pix_fmt yuv420p -f flv rtmp://192.168.1.200:1935/BriziLive/myStream

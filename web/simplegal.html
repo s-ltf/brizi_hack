@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Le styles -->
+    <link rel="stylesheet" type="text/css" href="./ilightbox/src/css/ilightbox.css"/>
+  </head>
+  <body>
+
+    <ul class="thumbnails advanced-images">
+      <li class="span4">
+        <a href="#" id="inline_gallery" class="thumbnail"><img src="./ilightbox/assets/img/thumbnails/599_1nero_splash_1.jpg"></a>
+        <div class="caption">
+        <h3>Inline Image Gallery</h3>
+        <p>An image Gallery with a single click and some customization like: skin, path, startFrom, ...</p>
+        </div>
+    
+        <div class="alert alert-info" align="left">
+        Pictures by <a href="http://www.caesarlima.com/#mi=2&pt=1&pi=10000&s=0&p=1&a=0&at=0" target="_blank"><b>caesarlima</b></a>
+        </div>
+      </li>
+    </ul>
+
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-4" align="center">
+      	<!-- <a id="cycling_arrows" href="#" target="_blank"><img max-height="300px" src="./ilightbox/assets/img/photos/challenger_by_nikosalpha-d5mgk3u.jpg"></a> -->
+      	<a id="cycling_arrows" href="#" target="_blank"><img max-height="300px" src="./images_ftp/group1.jpg"></a>
+      </div>
+      <div class="col-md-4">
+      </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="./ilightbox/assets/js/jquery.js"></script>
+    <script src="./ilightbox/assets/js/jquery.requestAnimationFrame.js"></script>
+    <script src="./ilightbox/src/js/jquery.mousewheel.js"></script>
+    <script src="./ilightbox/src/js/ilightbox.packed.js"></script>
+    <script>
+
+		$(document).ready(function(){
+
+      var socialButtons = {
+        facebook: true,
+        twitter: true,
+      };
+
+      var max_image_width = 5000; // very large
+      var max_image_height = 5000; // very large
+
+      var MAX_MOBILE_SCREEN_WIDTH = 480;
+      if( screen.width <= MAX_MOBILE_SCREEN_WIDTH ) {
+        $('#livestream').hide();
+        max_image_width = 980;
+        max_image_height = 980;
+      }
+
+      // IMAGES - Advanced Examples - Begins "Auto cycling & Arrows" Example
+      $('#cycling_arrows').click(function(){
+        $.iLightBox(
+          [
+            {
+              URL: "./images_ftp/group1.jpg",
+              type: "image",
+              options: {
+                width: max_image_width,
+                height: max_image_height,
+              },
+            },
+            {
+              URL: "./images_ftp/group2.jpg",
+              type: "image",
+              options: {
+                width: max_image_width,
+                height: max_image_height,
+              },
+            },
+            {
+              URL: "./images_ftp/girl.jpg",
+              type: "image",
+              options: {
+                width: max_image_width,
+                height: max_image_height,
+              },
+            }
+          ],
+          {
+            // Available skins are: dark, light, parade, smooth, metro-black, metro-white and mac.
+            skin: 'mac',
+            path: 'horizontal',
+            mobileOptimizer: true,
+            innerToolbar: true,
+            social: {
+              start: true,
+              buttons: socialButtons
+            },
+            overlay: {
+              opacity: .85
+            },            
+            fullAlone: 0,
+            controls: {
+              thumbnail: 1,
+              arrows: 1,
+              slideshow: 1,
+              toolbar: false
+            },
+            slideshow: {
+              startPaused: false,
+              pauseTime: 4000,
+              pauseOnHover: true
+            },
+            thumbnails: {
+              normalOpacity: .3,
+              activeOpacity: 1
+            },
+            styles: {
+              pageOffsetY: 100,
+              nextScale: 0.6,
+              prevScale: 0.6,
+              nextOpacity: 0.6,
+              prevOpacity: 0.6
+            },
+          }
+        );
+        return false;
+      });
+    });
+    </script>
+  </body>
+</html>

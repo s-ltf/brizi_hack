@@ -1,0 +1,272 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Brizi Cam Voter</title>
+    <meta name"viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/favicon_16.ico">
+    <!-- Le CSS -->
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./ilightbox/src/css/ilightbox.css"/>
+    <link rel="stylesheet" type="text/css" href="./voting.css">
+  </head>
+
+  <body>
+    <div id="mainContainer" class="container">
+
+      <div class="row">
+        <div class="col-md-12" >
+          <p align="center">
+            <img align="middle" src="./images_branding/brizi_icon.png" class="img-responsive img-circle" alt="Responsive image" height="120" width="120" />
+            <h2> -- Brizi Admin Dashboard -- </h2>
+          </p>
+        </div> <!-- col-md-12 -->
+      </div>      
+
+      <div class="row customDiv">
+        <div class="col-md-12" align="center">
+          <h4> -- Live photo gallery, click to view image location on server path! -- </h4>
+          <a id="image_gallery" href="#" target="_blank"><img class="img-responsive" style="width: auto;" src="./images_ftp/thumb0636.png"></a>
+        </div>
+      </div>
+
+      <div class="row customDiv">
+        <div class="col-md-12" align="center">
+          <h1 align="center" style="margin:0px; padding:0px">Voting Results</h1>
+          <h5 align="center" id="tableName"></h5>
+          <div align="center" style="color:red;">
+            <span>Location: </span>
+            <span id="voteMajorityLocation"></span>
+          </div>
+          <div align="center">
+            <span>Count: </span>
+            <span id="voteMajorityCount"></span>
+          </div>
+          <br>
+          <div align="center">
+            <button
+              id="resetButton"
+              type="button"
+              class="btn btn-default"
+              <span class="glyphicon glyphicon-repeat" style="color:red;"></span> Reset Voting Results
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+    </div> <!-- container -->
+
+    <!-- Le Javascript -->
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <script src="./ilightbox/assets/js/jquery.js"></script>
+    <script src="./ilightbox/assets/js/jquery.requestAnimationFrame.js"></script>
+    <script src="./ilightbox/src/js/jquery.mousewheel.js"></script>
+    <script src="./ilightbox/src/js/ilightbox.js"></script>    
+    <script type="text/javascript">
+      $(document).ready(function(){
+
+        /* CONSTANTS
+        -------------------------------------------------- */
+        var EVENT_NAME = 'event';
+        var TABLE_NAME = 'voting_' + EVENT_NAME;
+        var ONE_SEC_IN_MS = 1000;
+        var TABLE_REFRESH_TIME_IN_MS = 5000;
+        var IMAGE_DIRECTORY = "./images_ftp";
+        var GALLERY_REFRESH_TIME_IN_MS = 3500;
+        var images_in_gallery = new Array();
+        var max_image_width = 5000; // very large
+        var max_image_height = 5000; // very large
+
+        /* INITIAL LOAD
+        -------------------------------------------------- */
+        // Gallery
+        $.ajax({
+          url: 'gallery.php',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            func: 'returnImages',
+          },
+          success: function(response) {
+            console.log(response);
+            images_in_gallery = new Array();
+            response.forEach(function(image_name) {
+              images_in_gallery.push({
+                "URL": IMAGE_DIRECTORY + '/' + image_name,
+                type: "image",
+                options: {
+                  width: max_image_width,
+                  height: max_image_height,
+                },
+                caption: 'Location on server: ' +  '~/public_html/nbtc/images_ftp/' + image_name,
+              });
+            });
+          },
+          error: function (request, status, error) {
+            console.log(request.responseText);
+          }
+        });
+
+        // Polls
+        $.ajax({
+          url: 'voting.php',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            func: 'checkVoteResults',
+            table: TABLE_NAME
+          },
+          success: function(response) {
+            console.log(response);
+            results = findMaxVotes(response);
+            voteMajorityLocation.innerHTML = results[0];
+            voteMajorityCount.innerHTML = results[1];
+          },
+          error: function (request, status, error) {
+            console.log(request.responseText);
+          }
+        });
+
+        /* IMAGE GALLERY RELATED
+        -------------------------------------------------- */
+        var socialButtons = {
+          facebook: true,
+          twitter: true,
+        };
+
+        $('#image_gallery').click(function(){
+          $.iLightBox(
+            images_in_gallery,
+            {
+              // Available skins are: dark, light, parade, smooth, metro-black, metro-white and mac.
+              skin: 'mac',
+              path: 'horizontal',
+              mobileOptimizer: true,
+              innerToolbar: true,
+              social: {
+                start: true,
+                buttons: socialButtons
+              },
+              overlay: {
+                opacity: .85
+              },            
+              fullAlone: 0,
+              controls: {
+                thumbnail: 1,
+                arrows: 1,
+                slideshow: 1,
+                toolbar: false
+              },
+              slideshow: {
+                startPaused: false,
+                pauseTime: 4000,
+                pauseOnHover: true
+              },
+              thumbnails: {
+                normalOpacity: .3,
+                activeOpacity: 1
+              },
+              styles: {
+                pageOffsetY: 100,
+                nextScale: 0.6,
+                prevScale: 0.6,
+                nextOpacity: 0.6,
+                prevOpacity: 0.6
+              },
+            }
+          );
+          return false;
+        });
+
+        /* POLLS RELATED
+        -------------------------------------------------- */
+        $("#tableName").html("<i>(table: " + TABLE_NAME + ")</i>");
+
+        $( "#resetButton" ).click(function() {
+          $.ajax({
+            url: 'voting.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              func: 'resetTableVoteValues',
+              table: TABLE_NAME
+            },
+            success: function(response) {
+              console.log(response);
+            },
+            error: function (request, status, error) {
+              console.log(request.responseText);
+            }
+          });
+        });
+
+        function findMaxVotes(input){
+          var location = null;
+          var max = 0;
+          for (key in input) {
+            if (parseInt(input[key]) > max) {
+              max = parseInt(input[key]);
+              location = key;
+            }
+          }
+          return [location, max];
+        }
+
+        /* PERIODIC REFRESH OF GALLERY, AND POLL RESULTS
+        -------------------------------------------------- */
+        setInterval(function () {
+          $.ajax({
+            url: 'gallery.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              func: 'returnImages',
+            },
+            success: function(response) {
+              console.log(response);
+              images_in_gallery = new Array();
+              response.forEach(function(image_name) {
+                images_in_gallery.push({
+                  "URL": IMAGE_DIRECTORY + '/' + image_name,
+                  type: "image",
+                  options: {
+                    width: max_image_width,
+                    height: max_image_height,
+                  },
+                });
+              });              
+            },
+            error: function (request, status, error) {
+              console.log(request.responseText);
+            }
+          });
+        }, GALLERY_REFRESH_TIME_IN_MS);
+        setInterval(function () {
+          $.ajax({
+            url: 'voting.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              func: 'checkVoteResults',
+              table: TABLE_NAME
+            },
+            success: function(response) {
+              console.log(response);
+              results = findMaxVotes(response);
+              voteMajorityLocation.innerHTML = results[0];
+              voteMajorityCount.innerHTML = results[1];
+            },
+            error: function (request, status, error) {
+              console.log(request.responseText);
+            }
+          });
+        }, TABLE_REFRESH_TIME_MS);
+      });
+      </script>
+  </body>
+</html>

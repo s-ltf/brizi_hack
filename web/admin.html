@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Brizi Cam Voter</title>
+    <meta name"viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Le CSS -->
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./brizi.css">
+    <script type="text/javascript" src="./jwplayer/jwplayer.js"></script>
+    <script type="text/javascript">jwplayer.key="c2dbpYqoRfbQVoYFQ32U4abEh+UJG/EsfudDxw==";</script>
+  </head>
+
+  <body>
+    <div id="mainContainer" class="container">
+
+      <div class="row">
+        <div class="col-md-12" >
+          <p align="center">
+            <img align="middle" src="./images_branding/brizi_icon.png" class="img-responsive img-circle" alt="Responsive image" height="120" width="120" />
+            <h2> -- Brizi Admin Dashboard -- </h2>
+          </p>
+        </div> <!-- col-md-12 -->
+      </div>
+
+      <div class="row customDiv">
+        <div class="col-md-12" align="center">
+          <h2 style="font-size:32px;"> -- Live-stream from Brizi -- </h2>
+          <br>
+          <button id="snapshot_button" type="button" class="btn btn-default btn-lg"><font color="blue"><span class="glyphicon glyphicon-camera"></span> Take snapshot</font></button>
+          <br>
+          <br>
+          <div id="myElement">Loading the player...</div>
+        </div>
+      </div>
+
+      <div class="row customDiv">
+        <div class="col-md-12" align="center">
+          <h2 style="font-size:32px;"> -- Live photo gallery, 'Delete' button beneath each image -- </h2>
+          <!-- <a id="image_gallery" href="#" target="_blank"><img class="img-responsive" style="width: auto;" src="./images_ftp/group1.jpg"></a> -->
+        </div>
+        <span class="controls"></span>
+      </div>
+
+    </div> <!-- container -->
+
+    <!-- Le Javascript -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="./js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript">
+      jwplayer("myElement").setup({
+          file: "rtmp://10.0.0.14:1935/BriziLive/myStream",
+          image: "./images_branding/brizi_livestream.png",
+          rtmp: {
+                      bufferlength: 0.1
+                  },
+          height: 480,
+          width: 720,
+          //autostart: true,
+          mute: true
+      });
+    </script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+
+        /* CONSTANTS
+        -------------------------------------------------- */
+        var EVENT_NAME = 'event';
+        var TABLE_NAME = 'voting_' + EVENT_NAME;
+        var ONE_SEC_IN_MS = 1000;
+        var TABLE_REFRESH_TIME_IN_MS = 5000;
+        var IMAGE_DIRECTORY = "./images_ftp";
+        var GALLERY_REFRESH_TIME_IN_MS = 5000;
+        var images_in_gallery = new Array();
+        var max_image_width = 5000; // very large
+        var max_image_height = 5000; // very large
+
+        //Image load success function
+        function onImgLoad(response) {
+            console.log(response);
+            images_in_gallery = new Array();
+            $('.controls').html(''); //clear controls from before on refresh
+            response.forEach(function(image_name_and_path) {
+              var imgSrc = image_name_and_path;
+              images_in_gallery.push({
+                "URL": imgSrc,
+                type: "image",
+                options: {
+                  width: max_image_width,
+                  height: max_image_height,
+                },
+                caption: 'Location on server: ' +  '~/public_html/mobile/images_ftp/' + image_name_and_path,
+              });
+              var img = '<div align="center"><img src=' + imgSrc + ' style="width: 400px;"></div>';
+              // var delBtn = '<button onclick=del("' + imgSrc + '");>Delete '+ image_name_and_path + '</button></div>';
+
+
+              var delBtn = '<div align="center"><button type="button" class="btn btn-default btn-md" onclick=del("' + imgSrc + '");> <font color="red"><span class="glyphicon glyphicon-trash"></span> Delete '+ image_name_and_path + '</font></button></div>';
+              $('.controls').append(img, delBtn, "<br>");
+            });
+        }
+
+        /* INITIAL LOAD
+        -------------------------------------------------- */
+        // Gallery
+        $.ajax({
+          url: '../gallery.php',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            func: 'returnImages',
+          },
+          success: function(response) {
+           onImgLoad(response);
+          },
+          error: function (request, status, error) {
+            console.log(request.responseText);
+          }
+        });
+
+        /* ADMIN CONTROLS
+        -------------------------------------------------- */
+        $('#snapshot_button').click(function() {
+          $(this).prop("disabled",true);
+          $.ajax({
+            context: this,
+            url: '../gallery.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              func: 'takeSnapshot',
+            },
+            success: function(response) {
+              $(this).prop("disabled", false);
+              console.log("In SuccessResponse: \n", response);
+            },
+             error: function (request, status, error) {
+              $(this).prop("disabled", false);
+              console.log("In ErrorResponse: \n", request.responseText);
+            }
+          });
+        });
+        /* IMAGE GALLERY RELATED
+        -------------------------------------------------- */
+        // Delete an image
+        del = function(imgName) {
+          $.ajax({
+            url: '../gallery.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              func: 'deleteImage',
+              imgName: imgName
+            },
+            success: function(response) {
+              onImgLoad(response);
+            },
+             error: function (request, status, error) {
+              console.log(request.responseText);
+            }
+          });
+        };
+
+        /* PERIODIC REFRESH OF GALLERY
+        -------------------------------------------------- */
+        setInterval(function () {
+          $.ajax({
+            url: '../gallery.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              func: 'returnImages',
+            },
+            success: function(response) {
+              onImgLoad(response);
+            },
+            error: function (request, status, error) {
+              console.log(request.responseText);
+            }
+          });
+        }, GALLERY_REFRESH_TIME_IN_MS);
+
+      });
+      </script>
+  </body>
+</html>

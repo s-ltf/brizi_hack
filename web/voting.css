@@ -1,0 +1,75 @@
+.input-group
+{
+  margin: 3px 0px 3px 0px;
+}
+
+.resultTable
+{
+  height:150px;
+  width:280px;
+}
+
+div.progress-bar
+{
+  margin-bottom:10px;
+}
+
+body {
+   background:#E4FAFF !important;
+}
+
+.ilightbox-holder .ilightbox-container .ilightbox-social {
+  height: 40px;
+}
+
+.ilightbox-holder .ilightbox-container .ilightbox-social ul li a {
+  float: left;
+  margin-left: 5px;
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  background-position: 50%;
+}
+
+.ilightbox-holder .ilightbox-container .ilightbox-social ul li.facebook a {
+  background-image: url('./ilightbox/src/social_icons/facebook_32.png');
+}
+
+.ilightbox-holder .ilightbox-container .ilightbox-social ul li.twitter a {
+  background-image: url('./ilightbox/src/social_icons/twitter_32.png');
+}
+
+
+.customDiv {
+  background: linear-gradient(to bottom, #FFFFFF 0%, #FFFAFA 40%);
+  border: 2px solid #d0d1d5;
+  border-radius: 4px;
+  margin: 8px;
+  overflow: hidden;
+  padding: 8px;
+  vertical-align: middle;
+}
+
+h2 {
+  text-align:center;
+}
+
+h3 {
+  text-align:center;
+}
+
+h4 {
+  text-align:center;
+}
+
+/*@font-face
+{
+  font-family: myFirstFont;
+  src: url('fonts/harabara.ttf');
+}
+
+.div
+{
+  font-family:myFirstFont;
+}
+*/

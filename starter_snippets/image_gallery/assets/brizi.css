@@ -1,0 +1,21 @@
+.customDiv {
+  background: linear-gradient(to bottom, #FFFFFF 0%, #FFFAFA 40%);
+  border: 2px solid #d0d1d5;
+  border-radius: 4px;
+  margin: 8px;
+  overflow: hidden;
+  padding: 8px;
+  vertical-align: middle;
+}
+
+h2 {
+  text-align:center;
+}
+
+h3 {
+  text-align:center;
+}
+
+h4 {
+  text-align:center;
+}

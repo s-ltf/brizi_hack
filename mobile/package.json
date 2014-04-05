@@ -1,0 +1,15 @@
+{
+  "name": "Brizi_mobile_app_target",
+  "email": "kaustav_2007@hotmail.com",
+  "url": "http://www.flybrizi.com/mobile",
+  "devDependencies": {
+    "gulp": "latest",
+    "gulp-rename": "latest",
+    "gulp-jade": "latest",
+    "gulp-stylus": "latest",
+    "gulp-coffee": "latest",
+    "gulp-util": "latest",
+    "gulp-rename": "latest",
+    "gulp-flatten": "latest"
+  }
+}
